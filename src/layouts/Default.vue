@@ -10,7 +10,7 @@
     </header>
     <body class="body">
       <div class="content">
-        <router-view />
+        <router-view></router-view>
       </div>
     </body>
     <footer class="footer">
@@ -38,7 +38,7 @@ export default defineComponent({});
     width: 100%;
     height: 10%;
     padding: 0 25px;
-    background: var(--color-background);
+    background: var(--color-primary);
     &__logo {
       display: flex;
       align-items: center;
@@ -61,6 +61,13 @@ export default defineComponent({});
   }
   .body {
     height: 85%;
+    .content {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
   .footer {
     height: 5%;
