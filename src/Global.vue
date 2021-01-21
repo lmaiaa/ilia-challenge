@@ -1,7 +1,13 @@
+<template>
+  <div class="global"></div>
+</template>
 <style lang="scss">
 :root {
-  --color-background: #ea5b0b;
+  --color-primary: #ea5b0b;
+  --color-primary-light: #e9915f;
+  --color-primary-dark: #e37232;
   --color-text-base: #ffffff;
+  --color-shadow: #00000029;
   font-size: 60%;
 }
 * {
