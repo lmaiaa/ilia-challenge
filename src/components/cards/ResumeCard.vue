@@ -59,8 +59,19 @@ export default defineComponent({
   }
   &__image {
     transition: transform 0.2s;
+    width: auto;
+    height: auto;
+    min-width: 80px;
+    min-height: 100px;
+    margin-bottom: 5px;
     &:hover {
-      transform: scale(1.4);
+      transform: scale(1.2);
+    }
+    img {
+      object-fit: fill;
+      max-height: 300px;
+      width: 100%;
+      height: 100%;
     }
   }
   &__types {

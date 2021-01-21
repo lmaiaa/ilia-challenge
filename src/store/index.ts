@@ -1,2 +1,3 @@
 import * as Cards from "./cards";
-export { Cards };
+import * as Loadings from "./loadings";
+export { Cards, Loadings };

@@ -1,12 +1,25 @@
 <template>
   <div class="home">
-    <div class="slidershow-container">
-      <div class="cards fade" v-for="card in cards" :key="card.id">
-        <resume-card :resumePokemon="card" />
+    <div class="home__search">
+      <combobox
+        placeholder="Busque seu Pokemon"
+        :cards="cards"
+        v-model="namePokemon"
+      />
+    </div>
+    <div class="home__slidershow-container" :class="sizeScreen">
+      <div class="cards-container">
+        <div class="cards fade" v-for="card in cards" :key="card.id">
+          <resume-card :resumePokemon="card" />
+        </div>
       </div>
       <div class="transition-sliders">
-        <a class="prev" @click="plusSlides(-1)">&#10094;</a>
-        <a class="next" @click="plusSlides(1)">&#10095;</a>
+        <a class="prev" @click="plusSlides(sizeScreen == 'mobile' ? -1 : -14)"
+          >&#10094;</a
+        >
+        <a class="next" @click="plusSlides(sizeScreen == 'mobile' ? 1 : 14)"
+          >&#10095;</a
+        >
       </div>
     </div>
   </div>
@@ -16,17 +29,24 @@
 import ResumeCard from "@/components/cards/ResumeCard.vue";
 import { defineComponent, onMounted, ref } from "vue";
 import { Cards } from "@/store";
+import Combobox from "@/components/inputs/Combobox.vue";
 export default defineComponent({
-  components: { ResumeCard },
+  components: {
+    ResumeCard,
+    Combobox,
+  },
   name: "Home",
   setup() {
-    const cards = Cards.getters.cards;
+    const cards = Cards.getters.cards.value;
     const cardIndex = ref(1);
-    const card = ref(null);
-    const showSlides = async (n) => {
+    const namePokemon = ref("");
+    const sizeScreen = ref("desktop");
+    let pageRequest = 1;
+
+    const showSlides = (n) => {
       const cardsHTML = document.getElementsByClassName("cards");
-      if (n > cardsHTML.length) {
-        cardIndex.value = 1;
+      if (n - 1 > cardsHTML.length) {
+        cardIndex.value = cardsHTML.length;
       }
       if (n < 1) {
         cardIndex.value = cardsHTML.length;
@@ -34,16 +54,43 @@ export default defineComponent({
       for (let i = 0; i < cardsHTML.length; i++) {
         cardsHTML[i].style.display = "none";
       }
-      cardsHTML[cardIndex.value - 1].style.display = "flex";
+      if (sizeScreen.value == "desktop") {
+        for (let i = cardIndex.value; i < cardIndex.value + 14; i++) {
+          cardsHTML[i - 1].style.display = "flex";
+        }
+      } else cardsHTML[cardIndex.value - 1].style.display = "flex";
     };
-    const plusSlides = (n) => {
-      showSlides((cardIndex.value += n));
+    const plusSlides = async (n) => {
+      const cardsHTML = document.getElementsByClassName("cards");
+      const newIndex = (cardIndex.value += n);
+      if (newIndex >= cardsHTML.length) {
+        pageRequest += 1;
+        await Cards.actions.getCards(pageRequest);
+        console.log(Cards.getters.cards.value);
+      }
+      showSlides(newIndex);
     };
+
+    new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.contentRect.width <= 770) {
+          sizeScreen.value = "mobile";
+          showSlides(cardIndex.value);
+        } else {
+          sizeScreen.value = "desktop";
+          showSlides(cardIndex.value);
+        }
+      });
+    }).observe(document.querySelector("#app"));
+
     onMounted(async () => {
-      await Cards.actions.getCards(1);
-      showSlides(cardIndex.value);
+      if (pageRequest == 1 && !Cards.getters.cards.value.length) {
+        await Cards.actions.getCards(pageRequest);
+        showSlides(cardIndex.value);
+      }
     });
-    return { cards, plusSlides };
+
+    return { cards, plusSlides, namePokemon, sizeScreen };
   },
 });
 </script>
@@ -53,16 +100,45 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   background: var(--color-primary-light);
-  .slidershow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &__search {
+    padding: 10px 0;
+  }
+  &__slidershow-container.desktop {
     width: 100%;
     height: 100%;
-    .cards {
+    overflow: auto;
+
+    .cards-container {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      .cards {
+        max-height: 300px;
+        max-width: 200px;
+        margin: 10px;
+      }
+    }
+  }
+  &__slidershow-container.mobile {
+    width: 100%;
+    height: 100%;
+    .cards-container {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
       height: 100%;
     }
+  }
+  &__slidershow-container {
     .prev,
     .next {
       cursor: pointer;
