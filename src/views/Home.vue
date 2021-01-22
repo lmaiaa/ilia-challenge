@@ -11,7 +11,7 @@
     </div>
     <div class="home__slidershow-container" :class="sizeScreen">
       <div class="cards-container">
-        <div class="cards fade" v-for="card in cards" :key="card.id">
+        <div class="cards fade" v-for="card in cardsSorted" :key="card.id">
           <resume-card :resumePokemon="card" />
         </div>
       </div>
@@ -29,11 +29,17 @@
 
 <script>
 import ResumeCard from "@/components/cards/ResumeCard.vue";
-import { defineComponent, onMounted, reactive, ref, watch } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { Cards } from "@/store";
 import Combobox from "@/components/inputs/Combobox.vue";
 import debounce from "lodash.debounce/index";
-import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -43,6 +49,18 @@ export default defineComponent({
   name: "Home",
   setup() {
     const cards = Cards.getters.cards.value;
+    const cardsSorted = computed(() => {
+      return cards.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+    });
     const cardsFoundByName = reactive({ value: [] });
     const cardIndex = ref(1);
     const namePokemon = ref("");
@@ -64,7 +82,12 @@ export default defineComponent({
       }
     };
     const selectPokemon = (router) => {
-      Cards.mutations.ADD_CARD(pokemonSelect.value);
+      if (
+        !cardsSorted.value.filter((card) => card.id == pokemonSelect.value.id)
+          .length
+      ) {
+        Cards.mutations.ADD_CARD(pokemonSelect.value);
+      }
       router.push(`/details/${pokemonSelect.value.id}`);
     };
     const debounceGetPokemon = debounce(getPokemon, 500);
@@ -113,6 +136,7 @@ export default defineComponent({
       if (pageRequest == 1 && !Cards.getters.cards.value.length) {
         await Cards.actions.getCards(pageRequest);
         showSlides(cardIndex.value);
+        console.log(cardsSorted);
       }
     });
 
@@ -124,6 +148,7 @@ export default defineComponent({
       cardsFoundByName,
       selectPokemon,
       matchNamePokemon,
+      cardsSorted,
     };
   },
 });
