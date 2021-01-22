@@ -93,7 +93,6 @@ export default defineComponent({
       if (newIndex >= cardsHTML.length) {
         pageRequest += 1;
         await Cards.actions.getCards(pageRequest);
-        console.log(Cards.getters.cards.value);
       }
       showSlides(newIndex);
     };
