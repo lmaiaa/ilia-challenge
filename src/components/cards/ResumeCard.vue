@@ -12,7 +12,7 @@
       <h3>{{ resumePokemon.name.toUpperCase() }}</h3>
     </div>
     <div class="resume-card__types">
-      <h3>Tipos:</h3>
+      <h3>Tipo(s):</h3>
       <div
         class="types"
         v-for="(type, index) in resumePokemon.types"
@@ -22,7 +22,10 @@
       </div>
     </div>
     <div class="resume-card__more-infos">
-      <simple-button label="Mais informações" />
+      <simple-button
+        label="Mais informações"
+        @click="$router.push(`/details/${resumePokemon.id}`)"
+      />
     </div>
   </div>
 </template>
@@ -44,9 +47,9 @@ export default defineComponent({
 <style lang="scss">
 .resume-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-flow: column nowrap;
   padding: 10px;
   max-width: 300px;
   width: 100%;

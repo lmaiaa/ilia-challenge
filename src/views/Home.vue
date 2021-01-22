@@ -3,8 +3,10 @@
     <div class="home__search">
       <combobox
         placeholder="Busque seu Pokemon"
-        :cards="cards"
+        :cards="cardsFoundByName.value.cards"
         v-model="namePokemon"
+        @changed="addPokemon"
+        @input="matchNamePokemon"
       />
     </div>
     <div class="home__slidershow-container" :class="sizeScreen">
@@ -27,9 +29,11 @@
 
 <script>
 import ResumeCard from "@/components/cards/ResumeCard.vue";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref, watch } from "vue";
 import { Cards } from "@/store";
 import Combobox from "@/components/inputs/Combobox.vue";
+import debounce from "lodash.debounce/index";
+
 export default defineComponent({
   components: {
     ResumeCard,
@@ -38,10 +42,31 @@ export default defineComponent({
   name: "Home",
   setup() {
     const cards = Cards.getters.cards.value;
+    const cardsFoundByName = reactive({ value: [] });
     const cardIndex = ref(1);
     const namePokemon = ref("");
+    const pokemonSelect = reactive({ value: "" });
     const sizeScreen = ref("desktop");
     let pageRequest = 1;
+    const getPokemon = async () => {
+      const response = await Cards.actions.getCardsByName(namePokemon.value);
+      cardsFoundByName.value = response;
+    };
+    const matchNamePokemon = () => {
+      for (let i = 0; i < cardsFoundByName.value.cards.length; i++) {
+        if (
+          cardsFoundByName.value.cards[i].name === namePokemon.value ||
+          cardsFoundByName.value.cards[i].id === namePokemon.value
+        ) {
+          pokemonSelect.value = cardsFoundByName.value.cards[i];
+        }
+      }
+    };
+    const addPokemon = () => {
+      Cards.mutations.ADD_CARD(pokemonSelect.value);
+    };
+    const debounceGetPokemon = debounce(getPokemon, 500);
+    watch(namePokemon, async () => await debounceGetPokemon());
 
     const showSlides = (n) => {
       const cardsHTML = document.getElementsByClassName("cards");
@@ -90,7 +115,15 @@ export default defineComponent({
       }
     });
 
-    return { cards, plusSlides, namePokemon, sizeScreen };
+    return {
+      cards,
+      plusSlides,
+      namePokemon,
+      sizeScreen,
+      cardsFoundByName,
+      addPokemon,
+      matchNamePokemon,
+    };
   },
 });
 </script>

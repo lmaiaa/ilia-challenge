@@ -11,6 +11,12 @@ const routes: Array<RouteRecordRaw> = [
         name: "Home",
         component: () => import("@/views/Home.vue"),
       },
+      {
+        path: "/details/:id",
+        name: "Details",
+        component: () => import("@/views/PokemonDetails.vue"),
+        props: (route) => ({ id: route.params.id }),
+      },
     ],
   },
 ];
