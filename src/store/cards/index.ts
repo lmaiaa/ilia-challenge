@@ -13,7 +13,17 @@ export const getters = {
 
 export const mutations = {
   ADD_CARDS: (cardsResponse: ICards) => {
-    state.cards.push(...cardsResponse.cards);
+    const cardsSorted = cardsResponse.cards.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      }
+      if (a.name < b.name) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    });
+    state.cards.push(...cardsSorted);
   },
   ADD_CARD: (card: card) => {
     state.cards.push(card);

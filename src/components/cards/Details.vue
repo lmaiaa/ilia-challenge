@@ -77,7 +77,9 @@
           </h3>
         </div>
       </template>
-      <template v-slot:footer> </template>
+      <template v-slot:footer>
+        <simple-button label="Fechar" @click="$refs.attacksInfos.closeModal()"
+      /></template>
     </modal>
   </div>
 </template>
