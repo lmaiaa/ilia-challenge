@@ -2,7 +2,7 @@
 
 ## Sobre o Projeto
 
-O projeto é uma pokedex, ou seja, um gerenciador de pokemons. Foi utilizado uma API externa para o consumo dos dados dos cards Pokemon e f foi criado uma SPA (Single Page Application) responsiva e intuitiva
+O projeto é uma pokedex, ou seja, um gerenciador de pokemons. Foi utilizado uma API externa chamada [PokemonTCG](https://pokemontcg.io/) para o consumo dos dados dos cards Pokemon e f foi criado uma SPA (Single Page Application) responsiva e intuitiva
 
 **Tecnologias**: VueJs 3.x (utilizando a [composition-api](https://composition-api.vuejs.org/) + typescript) (Framework JavaScript).
 
