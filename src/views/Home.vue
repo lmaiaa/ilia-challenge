@@ -5,7 +5,7 @@
         placeholder="Busque seu Pokemon"
         :cards="cardsFoundByName.value.cards"
         v-model="namePokemon"
-        @changed="addPokemon"
+        @changed="selectPokemon($router)"
         @input="matchNamePokemon"
       />
     </div>
@@ -33,6 +33,7 @@ import { defineComponent, onMounted, reactive, ref, watch } from "vue";
 import { Cards } from "@/store";
 import Combobox from "@/components/inputs/Combobox.vue";
 import debounce from "lodash.debounce/index";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -62,8 +63,9 @@ export default defineComponent({
         }
       }
     };
-    const addPokemon = () => {
+    const selectPokemon = (router) => {
       Cards.mutations.ADD_CARD(pokemonSelect.value);
+      router.push(`/details/${pokemonSelect.value.id}`);
     };
     const debounceGetPokemon = debounce(getPokemon, 500);
     watch(namePokemon, async () => await debounceGetPokemon());
@@ -121,7 +123,7 @@ export default defineComponent({
       namePokemon,
       sizeScreen,
       cardsFoundByName,
-      addPokemon,
+      selectPokemon,
       matchNamePokemon,
     };
   },
