@@ -1,6 +1,6 @@
 <template>
   <div class="chip">
-    <span>{{ label }}</span>
+    <span class="span-chip">{{ label }}</span>
   </div>
 </template>
 

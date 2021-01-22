@@ -4,29 +4,26 @@
       list="options"
       name="combobox"
       id="combobox"
-      :value="value"
+      :value="modelValue"
       :placeholder="placeholder"
-      @input="$emit('input', $event.target.value)"
+      @input="$emit('update:modelValue', $event.target.value)"
       @change="$emit('changed')"
     />
-    <datalist id="options" v-if="cards.length">
+    <datalist id="options">
       <option
-        v-for="item in cards"
+        v-for="item in cardsReactive"
         :value="item.name"
         :key="item.id"
         @click="$emit('select-user')"
       >
+        {{ item.id }}
       </option>
-    </datalist>
-    <datalist v-else>
-      <option value="A lista está vazia" disabled></option>
     </datalist>
   </div>
 </template>
 
 <script lang="ts">
-import { ICards } from "@/types";
-import { defineComponent, PropType } from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -35,7 +32,11 @@ export default defineComponent({
       type: String,
     },
     cards: { type: Array },
-    value: { type: String },
+    modelValue: { type: String },
+  },
+  setup(props) {
+    const cardsReactive = computed(() => props.cards);
+    return { cardsReactive };
   },
 });
 </script>

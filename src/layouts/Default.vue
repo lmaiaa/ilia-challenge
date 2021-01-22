@@ -1,7 +1,7 @@
 <template>
   <div class="default">
     <header class="header">
-      <div class="header__logo">
+      <div class="header__logo" @click="$router.push('/')">
         <img src="./../assets/logo-ilia.png" alt="logo-ilia" />
       </div>
       <div class="header__title">
@@ -44,6 +44,7 @@ export default defineComponent({});
       align-items: center;
       width: 100%;
       height: 100%;
+      cursor: pointer;
       img {
         width: 85px;
         height: 45px;
